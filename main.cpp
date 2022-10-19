@@ -1,15 +1,17 @@
 #include <iostream>
-#include "conio.h"
+#include <ncurses.h>
+
 using namespace std;
 
 
 bool gameOver;
 
-int height =  5;
+int height =  10;
 int width = height + 2;
 int pos_x, pos_y, fruitX, fruitY, score;
 enum direction {STOP = 0 , LEFT, RIGHT, UP,DOWN};
 direction dir;
+
 
 
 
@@ -18,77 +20,142 @@ void Setup(){
     dir = STOP;
     pos_x = width/2;
     pos_y = height/2;
-    fruitX = rand() % (width - 1);
-    fruitY = rand() % (height - 1);
+    generateNewFruit();
     score = 0;
 
 }
 
 void Draw(){
-    system("clear");
+ 
 
     for (int j = 0; j < height ; j++){
         for (int k = 0; k < width; k++){
             if (j == pos_y && k == pos_x){
-                cout<<"O";
+                mvprintw(j,k,"O");
+              
             } else if (j == fruitY && k == fruitX){
-                cout<<"F";
+                mvprintw(j,k,"F");
+          
             }
 
              else if (j == 0 || j == height-1) {
-                cout<<"#";
+                mvprintw(j,k,"#");
+                
+                  
+                
             }
             else if (k==0 || k == width - 1){
-                cout<<"#";
+               mvprintw(j,k,"#");
+                   
+                
+                  
             }
             else {
-                cout<<" ";
+                mvprintw(j,k," ");
+                    
+                
             }
         }
-        cout<<endl;
     }
-
-
-
-
+    refresh();
+  
 }
 
 void Input(){
-    if (_kbhit()){
-        switch (_getch()){
-            case 'a':
+        noecho();
+        switch (getch()){
+
+            case 97:
                 dir = LEFT;
+                cbreak();
                 break;
-            case 'd':
+            case 100:
                 dir = RIGHT;
+                cbreak();
                 break;
-            case 'w':
+            case 119:
                 dir = UP;
+                cbreak();
                 break;
-            case 's':
+            case 115:
                 dir = DOWN;
+  
+                cbreak();
                 break;
-            case 'q':
+            case 71:
                 gameOver = true;
+       
+                  cbreak();
                 break;
             
         }
+  
+
+    }
+   
+
+
+
+void Logic(){
+    switch (dir){
+    case LEFT:
+        if(pos_x-1>0){
+            pos_x--;
+        }
+        break;
+    case RIGHT:
+        if(pos_x+1<width-1){
+            pos_x++;
+        }
+     
+        break;
+    case UP:
+        if(pos_y-1>0){
+            pos_y--;
+        }
+        break;
+    case DOWN:
+        if(pos_y+1<height-1){
+            pos_y++;
+        }
+        break;
+
+    }
+
+    //Checks if the current snake head coordinate is equal to the fruit coordinate, then eats the fruit
+    if (pos_x ==fruitX && pos_y==fruitY){
+        score++;
+        generateNewFruit();
     }
 }
 
-void Logic(){}
+
+void generateNewFruit(){
+    fruitX = rand() % (width - 1);
+    fruitY = rand() % (height - 1);
+}
 
 
 int main() {
+    initscr();
     Setup();
     Draw();
 
     while(!gameOver){
-        Draw();
+
+   
         Input();
         Logic();
+        Draw();
 
     }
+ 
+
+ 
+    endwin();
+
+
+ 
 
     return 0;
 }
