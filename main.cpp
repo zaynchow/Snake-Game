@@ -1,4 +1,5 @@
 #include <iostream>
+#include "conio.h"
 using namespace std;
 
 
@@ -17,8 +18,8 @@ void Setup(){
     dir = STOP;
     pos_x = width/2;
     pos_y = height/2;
-    fruitX = rand() % width;
-    fruitX = rand() % height;
+    fruitX = rand() % (width - 1);
+    fruitY = rand() % (height - 1);
     score = 0;
 
 }
@@ -26,10 +27,15 @@ void Setup(){
 void Draw(){
     system("clear");
 
-
     for (int j = 0; j < height ; j++){
         for (int k = 0; k < width; k++){
-            if (j == 0 || j == height-1) {
+            if (j == pos_y && k == pos_x){
+                cout<<"O";
+            } else if (j == fruitY && k == fruitX){
+                cout<<"F";
+            }
+
+             else if (j == 0 || j == height-1) {
                 cout<<"#";
             }
             else if (k==0 || k == width - 1){
@@ -47,21 +53,42 @@ void Draw(){
 
 }
 
-void Input(){}
+void Input(){
+    if (_kbhit()){
+        switch (_getch()){
+            case 'a':
+                dir = LEFT;
+                break;
+            case 'd':
+                dir = RIGHT;
+                break;
+            case 'w':
+                dir = UP;
+                break;
+            case 's':
+                dir = DOWN;
+                break;
+            case 'q':
+                gameOver = true;
+                break;
+            
+        }
+    }
+}
 
 void Logic(){}
 
 
 int main() {
-    // Setup();
+    Setup();
     Draw();
 
-    // while(!gameOver){
-    //     Draw();
-    //     Input();
-    //     Logic();
+    while(!gameOver){
+        Draw();
+        Input();
+        Logic();
 
-    // }
- 
+    }
+
     return 0;
 }
